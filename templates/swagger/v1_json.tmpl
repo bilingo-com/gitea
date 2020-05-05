@@ -2561,6 +2561,154 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/commits/:ref/count": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Get the count of the commits from a ref from a repository",
+        "operationId": "repoGetCommitCountFromRef",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of branch/tag/commit",
+            "name": "ref",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/CommitsCount"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          },
+          "409": {
+            "$ref": "#/responses/EmptyRepository"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/commits/fullMessages": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Get a list of all commits with full messages from a repository",
+        "operationId": "repoGetAllCommitsWithFullMessages",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "SHA or branch to start listing commits from (usually 'master')",
+            "name": "sha",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page number of requested commits",
+            "name": "page",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/CommitList"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          },
+          "409": {
+            "$ref": "#/responses/EmptyRepository"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/commits/graphRaw": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Get a graph raw of all commits from a repository",
+        "operationId": "repoGetAllCommitsGraphRaw",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "SHA or branch to start listing commits from (usually 'master')",
+            "name": "sha",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page number of requested commits",
+            "name": "page",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/CommitGraphRawList"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          },
+          "409": {
+            "$ref": "#/responses/EmptyRepository"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/commits/{ref}/statuses": {
       "get": {
         "produces": [
@@ -3007,6 +3155,135 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/git/blame/branch/{branchAndFilePath}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Get a blame from a repository by branch",
+        "operationId": "repoRefBlameByBranch",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "a \u003cbranch\u003e/\u003cfilePath\u003e",
+            "name": "branchAndFilePath",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/Blame"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/git/blame/commit/{commitAndFilePath}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Get a blame from a repository by commit.",
+        "operationId": "repoRefBlameByCommit",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "a \u003ccommit\u003e/\u003cfilePath\u003e",
+            "name": "commitAndFilePath",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/Blame"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/git/blame/tag/{tagAndFilePath}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Get a blame from a repository by tag",
+        "operationId": "repoRefBlameByTag",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "a \u003ctag\u003e/\u003cfilePath\u003e",
+            "name": "tagAndFilePath",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/Blame"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/git/blobs/{sha}": {
       "get": {
         "produces": [
@@ -3086,6 +3363,98 @@
         "responses": {
           "200": {
             "$ref": "#/responses/Commit"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/git/commits/{sha}/diffRaw": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Get a single commit with diff raw from a repository",
+        "operationId": "repoGetSingleCommitWithDiffRaw",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "a git ref or commit sha",
+            "name": "sha",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/CommitWithDiffRaw"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/responses/validationError"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/git/compare/{sha}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Get a comparison of the two versions via shaes / branches / tags",
+        "operationId": "repoGetCompare",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "The version to compare, use '...' to split",
+            "name": "sha",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/Compare"
           },
           "404": {
             "$ref": "#/responses/notFound"
@@ -3272,6 +3641,73 @@
         "responses": {
           "200": {
             "$ref": "#/responses/GitTreeResponse"
+          },
+          "400": {
+            "$ref": "#/responses/error"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/git/treesWithCommits/{sha}/{treepath}": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Gets the tree of a repository.",
+        "operationId": "GetTreeWithCommits",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "sha of the commit",
+            "name": "sha",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "path of the tree",
+            "name": "treepath",
+            "in": "path"
+          },
+          {
+            "type": "boolean",
+            "description": "show all directories and files",
+            "name": "recursive",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page number; the 'truncated' field in the response will be true if there are still more items after this page, false if the last page",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "number of items per page; default is 1000 or what is set in app.ini as DEFAULT_GIT_TREES_PER_PAGE",
+            "name": "per_page",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/GitTreeWithCommitsResponse"
           },
           "400": {
             "$ref": "#/responses/error"
@@ -6500,6 +6936,53 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/pulls/preMerged": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Get a comparison of the two versions via shaes / branches / tags and return whether it can be merged",
+        "operationId": "repoCompareAndPreMerged",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "The version to compare, use '...' to split",
+            "name": "shaes",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "description": "page number of commits in the result to return (1-based)",
+            "name": "page",
+            "in": "query"
+          },
+          {
+            "type": "integer",
+            "description": "page size of commits in the result, maximum page size is 50",
+            "name": "limit",
+            "in": "query"
+          }
+        ]
+      }
+    },
     "/repos/{owner}/{repo}/pulls/{index}": {
       "get": {
         "produces": [
@@ -6601,6 +7084,50 @@
           },
           "422": {
             "$ref": "#/responses/validationError"
+          }
+        }
+      }
+    },
+    "/repos/{owner}/{repo}/pulls/{index}/diffAndPatchRaw": {
+      "get": {
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Get a pull request with diff and patch raw",
+        "operationId": "repoGetPullWithDiffAndPatchRawRequest",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "integer",
+            "format": "int64",
+            "description": "index of the pull request to get",
+            "name": "index",
+            "in": "path",
+            "required": true
+          }
+        ],
+        "responses": {
+          "200": {
+            "$ref": "#/responses/PullRequestWithDiffAndPatchRaw"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
           }
         }
       }
@@ -10428,6 +10955,70 @@
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
+    "Blame": {
+      "description": "Blame represents show who modified each part of the file",
+      "type": "object",
+      "properties": {
+        "blame_parts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/BlamePart"
+          },
+          "x-go-name": "BlameParts"
+        },
+        "file_name": {
+          "type": "string",
+          "x-go-name": "FileName"
+        },
+        "file_size": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "FileSize"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "BlamePart": {
+      "type": "object",
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/User"
+        },
+        "commit": {
+          "$ref": "#/definitions/RepoCommit"
+        },
+        "committer": {
+          "$ref": "#/definitions/User"
+        },
+        "html_url": {
+          "type": "string",
+          "x-go-name": "HTMLURL"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "x-go-name": "Lines"
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CommitMeta"
+          },
+          "x-go-name": "Parents"
+        },
+        "sha": {
+          "type": "string",
+          "x-go-name": "SHA"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
     "Branch": {
       "description": "Branch represents a repository branch",
       "type": "object",
@@ -10726,6 +11317,156 @@
         "name": {
           "type": "string",
           "x-go-name": "Name"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "CommitWithDiffRaw": {
+      "type": "object",
+      "title": "Commit contains information generated from a Git commit.",
+      "properties": {
+        "author": {
+          "$ref": "#/definitions/User"
+        },
+        "commit": {
+          "$ref": "#/definitions/RepoCommit"
+        },
+        "committer": {
+          "$ref": "#/definitions/User"
+        },
+        "diff_raw": {
+          "type": "string",
+          "x-go-name": "DiffRaw"
+        },
+        "html_url": {
+          "type": "string",
+          "x-go-name": "HTMLURL"
+        },
+        "parents": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CommitMeta"
+          },
+          "x-go-name": "Parents"
+        },
+        "sha": {
+          "type": "string",
+          "x-go-name": "SHA"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "CommitsCount": {
+      "type": "object",
+      "title": "CommitsCount contains a count from the given ref.",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Count"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "Compare": {
+      "type": "object",
+      "title": "Compare information.",
+      "properties": {
+        "base_commit_id": {
+          "type": "string",
+          "x-go-name": "BaseCommitID"
+        },
+        "commit_count": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "CommitCount"
+        },
+        "commits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Commit"
+          },
+          "x-go-name": "Commits"
+        },
+        "diff": {
+          "$ref": "#/definitions/Diff"
+        },
+        "head_commit_id": {
+          "type": "string",
+          "x-go-name": "HeadCommitID"
+        },
+        "title": {
+          "type": "string",
+          "x-go-name": "Title"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "CompareAndPreMerged": {
+      "type": "object",
+      "title": "CompareAndPreMerged information.",
+      "properties": {
+        "base_commit_id": {
+          "type": "string",
+          "x-go-name": "BaseCommitID"
+        },
+        "commit_count": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "CommitCount"
+        },
+        "commits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Commit"
+          },
+          "x-go-name": "Commits"
+        },
+        "diff_not_available": {
+          "type": "boolean",
+          "x-go-name": "DiffNotAvailable"
+        },
+        "diff_raw": {
+          "type": "string",
+          "x-go-name": "DiffRaw"
+        },
+        "has_pullrequest": {
+          "type": "boolean",
+          "x-go-name": "HasPullRequest"
+        },
+        "head_branch": {
+          "type": "string",
+          "x-go-name": "HeadBranch"
+        },
+        "head_branches": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "x-go-name": "HeadBranches"
+        },
+        "head_commit_id": {
+          "type": "string",
+          "x-go-name": "HeadCommitID"
+        },
+        "not_matter_repos": {
+          "type": "boolean",
+          "x-go-name": "NotMatterRepos"
+        },
+        "nothing_to_compare": {
+          "type": "boolean",
+          "x-go-name": "NothingToCompare"
+        },
+        "same_repo": {
+          "type": "boolean",
+          "x-go-name": "SameRepo"
         }
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
@@ -11656,6 +12397,203 @@
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
+    "Diff": {
+      "type": "object",
+      "title": "Diff represents a difference between two git trees.",
+      "properties": {
+        "files": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DiffFile"
+          },
+          "x-go-name": "Files"
+        },
+        "is_incomplete": {
+          "type": "boolean",
+          "x-go-name": "IsIncomplete"
+        },
+        "raw": {
+          "type": "string",
+          "x-go-name": "Raw"
+        },
+        "total_addition": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "TotalAddition"
+        },
+        "total_deletion": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "TotalDeletion"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "DiffFile": {
+      "type": "object",
+      "title": "DiffFile represents a file diff.",
+      "properties": {
+        "addition": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Addition"
+        },
+        "deletion": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Deletion"
+        },
+        "index": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Index"
+        },
+        "is_bin": {
+          "type": "boolean",
+          "x-go-name": "IsBin"
+        },
+        "is_created": {
+          "type": "boolean",
+          "x-go-name": "IsCreated"
+        },
+        "is_deleted": {
+          "type": "boolean",
+          "x-go-name": "IsDeleted"
+        },
+        "is_incomplete": {
+          "type": "boolean",
+          "x-go-name": "IsIncomplete"
+        },
+        "is_lfs_file": {
+          "type": "boolean",
+          "x-go-name": "IsLFSFile"
+        },
+        "is_renamed": {
+          "type": "boolean",
+          "x-go-name": "IsRenamed"
+        },
+        "is_submoudule": {
+          "type": "boolean",
+          "x-go-name": "IsSubmodule"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        },
+        "old_name": {
+          "type": "string",
+          "x-go-name": "OldName"
+        },
+        "sections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DiffSection"
+          },
+          "x-go-name": "Sections"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Type"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "DiffLine": {
+      "type": "object",
+      "title": "DiffLine represents a line difference in a DiffSection.",
+      "properties": {
+        "comments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Comment"
+          },
+          "x-go-name": "Comments"
+        },
+        "content": {
+          "type": "string",
+          "x-go-name": "Content"
+        },
+        "left_idx": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "LeftIdx"
+        },
+        "right_idx": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "RightIdx"
+        },
+        "section_info": {
+          "$ref": "#/definitions/DiffLineSectionInfo"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Type"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "DiffLineSectionInfo": {
+      "description": "DiffLineSectionInfo represents diff line section meta data",
+      "type": "object",
+      "properties": {
+        "last_left_idx": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "LastLeftIdx"
+        },
+        "last_right_idx": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "LastRightIdx"
+        },
+        "left_hunk_size": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "LeftHunkSize"
+        },
+        "left_idx": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "LeftIdx"
+        },
+        "path": {
+          "type": "string",
+          "x-go-name": "Path"
+        },
+        "right_hunk_size": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "RightHunkSize"
+        },
+        "right_idx": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "RightIdx"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "DiffSection": {
+      "type": "object",
+      "title": "DiffSection represents a section of a DiffFile.",
+      "properties": {
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DiffLine"
+          },
+          "x-go-name": "Lines"
+        },
+        "name": {
+          "type": "string",
+          "x-go-name": "Name"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
     "EditAttachmentOptions": {
       "description": "EditAttachmentOptions options for editing attachments",
       "type": "object",
@@ -12563,6 +13501,42 @@
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
+    "GitEntryWithCommit": {
+      "description": "GitEntryWithCommit represents a git tree",
+      "type": "object",
+      "properties": {
+        "commit": {
+          "type": "object",
+          "x-go-name": "Commit"
+        },
+        "mode": {
+          "type": "string",
+          "x-go-name": "Mode"
+        },
+        "path": {
+          "type": "string",
+          "x-go-name": "Path"
+        },
+        "sha": {
+          "type": "string",
+          "x-go-name": "SHA"
+        },
+        "size": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Size"
+        },
+        "type": {
+          "type": "string",
+          "x-go-name": "Type"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
     "GitHook": {
       "description": "GitHook represents a Git repository hook",
       "type": "object",
@@ -12623,6 +13597,46 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/GitEntry"
+          },
+          "x-go-name": "Entries"
+        },
+        "truncated": {
+          "type": "boolean",
+          "x-go-name": "Truncated"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "GitTreeWithCommitsResponse": {
+      "description": "GitTreeWithCommitsResponse returns a git tree",
+      "type": "object",
+      "properties": {
+        "latest_commit": {
+          "type": "object",
+          "x-go-name": "LatestCommit"
+        },
+        "page": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Page"
+        },
+        "sha": {
+          "type": "string",
+          "x-go-name": "SHA"
+        },
+        "total_count": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "TotalCount"
+        },
+        "tree": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GitEntryWithCommit"
           },
           "x-go-name": "Entries"
         },
@@ -13516,6 +14530,136 @@
           "type": "string",
           "format": "date-time",
           "x-go-name": "Merged"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "PullRequestWithDiffAndPatchRaw": {
+      "description": "PullRequestWithDiffAndPatchRaw represents a pull request",
+      "type": "object",
+      "properties": {
+        "assignee": {
+          "$ref": "#/definitions/User"
+        },
+        "assignees": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          },
+          "x-go-name": "Assignees"
+        },
+        "base": {
+          "$ref": "#/definitions/PRBranchInfo"
+        },
+        "body": {
+          "type": "string",
+          "x-go-name": "Body"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Closed"
+        },
+        "comments": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Comments"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Created"
+        },
+        "diff_raw": {
+          "type": "string",
+          "x-go-name": "DiffRaw"
+        },
+        "diff_url": {
+          "type": "string",
+          "x-go-name": "DiffURL"
+        },
+        "due_date": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Deadline"
+        },
+        "head": {
+          "$ref": "#/definitions/PRBranchInfo"
+        },
+        "html_url": {
+          "type": "string",
+          "x-go-name": "HTMLURL"
+        },
+        "id": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "ID"
+        },
+        "labels": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Label"
+          },
+          "x-go-name": "Labels"
+        },
+        "merge_base": {
+          "type": "string",
+          "x-go-name": "MergeBase"
+        },
+        "merge_commit_sha": {
+          "type": "string",
+          "x-go-name": "MergedCommitID"
+        },
+        "mergeable": {
+          "type": "boolean",
+          "x-go-name": "Mergeable"
+        },
+        "merged": {
+          "type": "boolean",
+          "x-go-name": "HasMerged"
+        },
+        "merged_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Merged"
+        },
+        "merged_by": {
+          "$ref": "#/definitions/User"
+        },
+        "milestone": {
+          "$ref": "#/definitions/Milestone"
+        },
+        "number": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "Index"
+        },
+        "patch_raw": {
+          "type": "string",
+          "x-go-name": "PatchRaw"
+        },
+        "patch_url": {
+          "type": "string",
+          "x-go-name": "PatchURL"
+        },
+        "state": {
+          "$ref": "#/definitions/StateType"
+        },
+        "title": {
+          "type": "string",
+          "x-go-name": "Title"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time",
+          "x-go-name": "Updated"
+        },
+        "url": {
+          "type": "string",
+          "x-go-name": "URL"
+        },
+        "user": {
+          "$ref": "#/definitions/User"
         }
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
@@ -14502,6 +15646,12 @@
         }
       }
     },
+    "Blame": {
+      "description": "Blame",
+      "schema": {
+        "$ref": "#/definitions/Blame"
+      }
+    },
     "Branch": {
       "description": "Branch",
       "schema": {
@@ -14553,6 +15703,16 @@
         "$ref": "#/definitions/Commit"
       }
     },
+    "CommitGraphRawList": {
+      "description": "CommitGraphRawList",
+      "schema": {
+        "type": "array",
+        "items": {
+          "type": "integer",
+          "format": "uint8"
+        }
+      }
+    },
     "CommitList": {
       "description": "CommitList",
       "schema": {
@@ -14586,6 +15746,30 @@
           "format": "int64",
           "description": "Total commit count"
         }
+      }
+    },
+    "CommitWithDiffRaw": {
+      "description": "CommitWithDiffRaw",
+      "schema": {
+        "$ref": "#/definitions/CommitWithDiffRaw"
+      }
+    },
+    "CommitsCount": {
+      "description": "CommitsCount",
+      "schema": {
+        "$ref": "#/definitions/CommitsCount"
+      }
+    },
+    "Compare": {
+      "description": "Compare",
+      "schema": {
+        "$ref": "#/definitions/Compare"
+      }
+    },
+    "CompareAndPreMerged": {
+      "description": "CompareAndPreMerged",
+      "schema": {
+        "$ref": "#/definitions/CompareAndPreMerged"
       }
     },
     "ContentsListResponse": {
@@ -14685,6 +15869,12 @@
       "description": "GitTreeResponse",
       "schema": {
         "$ref": "#/definitions/GitTreeResponse"
+      }
+    },
+    "GitTreeWithCommitsResponse": {
+      "description": "GitTreeWithCommitsResponse",
+      "schema": {
+        "$ref": "#/definitions/GitTreeWithCommitsResponse"
       }
     },
     "Hook": {
@@ -14838,6 +16028,12 @@
         "items": {
           "$ref": "#/definitions/PullRequest"
         }
+      }
+    },
+    "PullRequestWithDiffAndPatchRaw": {
+      "description": "PullRequestWithDiffAndPatchRaw",
+      "schema": {
+        "$ref": "#/definitions/PullRequestWithDiffAndPatchRaw"
       }
     },
     "PullReview": {

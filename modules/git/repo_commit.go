@@ -219,6 +219,15 @@ func (repo *Repository) commitsByRange(id SHA1, page, pageSize int) (*list.List,
 	return repo.parsePrettyFormatLogToList(stdout)
 }
 
+func (repo *Repository) commitsGraphRawByRange(id SHA1, page int) ([]byte, error) {
+	stdout, err := NewCommand("log", id.String(), "--graph", "--skip="+strconv.Itoa((page-1)*CommitsRangeSize),
+		"--max-count="+strconv.Itoa(CommitsRangeSize)).RunInDirBytes(repo.Path)
+	if err != nil {
+		return nil, err
+	}
+	return stdout, nil
+}
+
 func (repo *Repository) searchCommits(id SHA1, opts SearchCommitsOptions) (*list.List, error) {
 	cmd := NewCommand("log", id.String(), "-100", prettyLogFormat)
 	args := []string{"-i"}

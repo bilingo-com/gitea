@@ -10,7 +10,9 @@ import (
 
 	"code.gitea.io/gitea/models"
 	"code.gitea.io/gitea/modules/context"
+	"code.gitea.io/gitea/modules/git"
 	"code.gitea.io/gitea/modules/repofiles"
+	"code.gitea.io/gitea/modules/setting"
 	api "code.gitea.io/gitea/modules/structs"
 	"code.gitea.io/gitea/routers/api/v1/utils"
 )
@@ -306,4 +308,73 @@ func GetCombinedCommitStatusByRef(ctx *context.APIContext) {
 	}
 
 	ctx.JSON(http.StatusOK, retStatus)
+}
+
+// GetCommitCountFromRef get the count for commits from ref.
+func GetCommitCountFromRef(ctx *context.APIContext) {
+	// swagger:operation GET /repos/{owner}/{repo}/commits/:ref/count repository repoGetCommitCountFromRef
+	// ---
+	// summary: Get the count of the commits from a ref from a repository
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: owner
+	//   in: path
+	//   description: owner of the repo
+	//   type: string
+	//   required: true
+	// - name: repo
+	//   in: path
+	//   description: name of the repo
+	//   type: string
+	//   required: true
+	// - name: ref
+	//   in: path
+	//   description: name of branch/tag/commit
+	//   type: string
+	//   required: true
+	// responses:
+	//   "200":
+	//     "$ref": "#/responses/CommitsCount"
+	//   "404":
+	//     "$ref": "#/responses/notFound"
+	//   "409":
+	//     "$ref": "#/responses/EmptyRepository"
+
+	if ctx.Repo.Repository.IsEmpty {
+		ctx.JSON(http.StatusConflict, api.APIError{
+			Message: "Git Repository is empty.",
+			URL:     setting.API.SwaggerURL,
+		})
+		return
+	}
+
+	gitRepo, err := git.OpenRepository(ctx.Repo.Repository.RepoPath())
+	if err != nil {
+		ctx.ServerError("OpenRepository", err)
+		return
+	}
+	defer gitRepo.Close()
+
+	ref := ctx.Params("ref")
+	if len(ref) == 0 {
+		ctx.Error(http.StatusBadRequest, "ref/sha not given", nil)
+		return
+	}
+
+	var baseCommit *git.Commit
+	// get commit specified by sha
+	baseCommit, err = gitRepo.GetCommit(ref)
+	if err != nil {
+		ctx.ServerError("GetCommit", err)
+		return
+	}
+
+	// Total commit count
+	commitsCountTotal, err := baseCommit.CommitsCount()
+	if err != nil {
+		ctx.ServerError("GetCommitsCount", err)
+		return
+	}
+	ctx.JSON(http.StatusOK, &api.CommitsCount{Count: commitsCountTotal})
 }

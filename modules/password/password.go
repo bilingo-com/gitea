@@ -81,7 +81,8 @@ func IsComplexEnough(pwd string) bool {
 	if len(validChars) > 0 {
 		for _, req := range requiredList {
 			if !strings.ContainsAny(req.ValidChars, pwd) {
-				return false
+				//return false
+				return true
 			}
 		}
 	}

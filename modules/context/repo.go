@@ -607,6 +607,83 @@ func RepoRef() macaron.Handler {
 	return RepoRefByType(RepoRefBranch)
 }
 
+// RepoPathRefBySHAWithPath handles for a repository reference using tree
+// sha and path
+func RepoRefBySHAWithPath() macaron.Handler {
+	return func(ctx *Context) {
+		// Empty repository does not have reference information.
+		if ctx.Repo.Repository.IsEmpty {
+			return
+		}
+
+		var (
+			refName string
+			err     error
+		)
+
+		// For API calls.
+		if ctx.Repo.GitRepo == nil {
+			repoPath := models.RepoPath(ctx.Repo.Owner.Name, ctx.Repo.Repository.Name)
+			ctx.Repo.GitRepo, err = git.OpenRepository(repoPath)
+			if err != nil {
+				ctx.ServerError("RepoRef Invalid repo "+repoPath, err)
+				return
+			}
+			// We opened it, we should close it
+			defer func() {
+				// If it's been set to nil then assume someone else has closed it.
+				if ctx.Repo.GitRepo != nil {
+					ctx.Repo.GitRepo.Close()
+				}
+			}()
+		}
+
+		// Get default branch.
+		refName = ctx.Repo.Repository.DefaultBranch
+		ctx.Repo.BranchName = refName
+		if !ctx.Repo.GitRepo.IsBranchExist(refName) {
+			brs, err := ctx.Repo.GitRepo.GetBranches()
+			if err != nil {
+				ctx.ServerError("GetBranches", err)
+				return
+			} else if len(brs) == 0 {
+				err = fmt.Errorf("No branches in non-empty repository %s",
+					ctx.Repo.GitRepo.Path)
+				ctx.ServerError("GetBranches", err)
+				return
+			}
+			refName = brs[0]
+		}
+		ctx.Repo.Commit, err = ctx.Repo.GitRepo.GetBranchCommit(refName)
+		if err != nil {
+			ctx.ServerError("GetBranchCommit", err)
+			return
+		}
+		ctx.Repo.CommitID = ctx.Repo.Commit.ID.String()
+		ctx.Repo.IsViewBranch = true
+
+		ctx.Repo.TreePath = ctx.Params("*")
+
+		ctx.Data["BranchName"] = ctx.Repo.BranchName
+		ctx.Data["BranchNameSubURL"] = ctx.Repo.BranchNameSubURL()
+		ctx.Data["CommitID"] = ctx.Repo.CommitID
+		ctx.Data["TreePath"] = ctx.Repo.TreePath
+		ctx.Data["IsViewBranch"] = ctx.Repo.IsViewBranch
+		ctx.Data["IsViewTag"] = ctx.Repo.IsViewTag
+		ctx.Data["IsViewCommit"] = ctx.Repo.IsViewCommit
+		ctx.Data["CanCreateBranch"] = ctx.Repo.CanCreateBranch()
+
+		ctx.Repo.CommitsCount, err = ctx.Repo.GetCommitsCount()
+		if err != nil {
+			ctx.ServerError("GetCommitsCount", err)
+			return
+		}
+		ctx.Data["CommitsCount"] = ctx.Repo.CommitsCount
+
+		ctx.Next()
+	}
+}
+
 // RefTypeIncludesBranches returns true if ref type can be a branch
 func (rt RepoRefType) RefTypeIncludesBranches() bool {
 	if rt == RepoRefLegacy || rt == RepoRefAny || rt == RepoRefBranch {

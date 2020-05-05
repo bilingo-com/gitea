@@ -47,6 +47,22 @@ type Commit struct {
 	Parents    []*CommitMeta `json:"parents"`
 }
 
+// Commit contains information generated from a Git commit.
+type CommitWithDiffRaw struct {
+	*CommitMeta
+	HTMLURL    string        `json:"html_url"`
+	RepoCommit *RepoCommit   `json:"commit"`
+	Author     *User         `json:"author"`
+	Committer  *User         `json:"committer"`
+	Parents    []*CommitMeta `json:"parents"`
+	DiffRaw    string        `json:"diff_raw"`
+}
+
+// CommitsCount contains a count from the given ref.
+type CommitsCount struct {
+	Count int64 `json:"count"`
+}
+
 // CommitDateOptions store dates for GIT_AUTHOR_DATE and GIT_COMMITTER_DATE
 type CommitDateOptions struct {
 	// swagger:strfmt date-time

@@ -134,6 +134,13 @@ type swaggerResponsePullRequest struct {
 	Body api.PullRequest `json:"body"`
 }
 
+// PullRequestWithDiffAndPatchRaw
+// swagger:response PullRequestWithDiffAndPatchRaw
+type swaggerResponsePullRequestWithDiffAndPatchRaw struct {
+	// in:body
+	Body api.PullRequestWithDiffAndPatchRaw `json:"body"`
+}
+
 // PullRequestList
 // swagger:response PullRequestList
 type swaggerResponsePullRequestList struct {
@@ -218,6 +225,13 @@ type swaggerGitTreeResponse struct {
 	Body api.GitTreeResponse `json:"body"`
 }
 
+// GitTreeWithCommitsResponse
+// swagger:response GitTreeWithCommitsResponse
+type GitTreeWithCommitsResponse struct {
+	// in: body
+	Body api.GitTreeWithCommitsResponse `json:"body"`
+}
+
 // GitBlobResponse
 // swagger:response GitBlobResponse
 type swaggerGitBlobResponse struct {
@@ -230,6 +244,13 @@ type swaggerGitBlobResponse struct {
 type swaggerCommit struct {
 	// in: body
 	Body api.Commit `json:"body"`
+}
+
+// CommitWithDiffRaw
+// swagger:response CommitWithDiffRaw
+type swaggerCommitWithDiffRaw struct {
+	// in: body
+	Body api.CommitWithDiffRaw `json:"body"`
 }
 
 // CommitList
@@ -253,6 +274,17 @@ type swaggerCommitList struct {
 	// in: body
 	Body []api.Commit `json:"body"`
 }
+
+// CommitsCount
+// swagger:response CommitsCount
+type swaggerCommitsCount struct {
+	//in: body
+	Body api.CommitsCount `json:"body"`
+}
+
+// CommitGraphRawList
+// swagger:response CommitGraphRawList
+type swaggerCommitGraphRawList []byte
 
 // EmptyRepository
 // swagger:response EmptyRepository
@@ -301,4 +333,25 @@ type swaggerTopicListResponse struct {
 type swaggerTopicNames struct {
 	// in: body
 	Body api.TopicName `json:"body"`
+}
+
+// Compare
+// swagger:response Compare
+type swaggerCompare struct {
+	//in: body
+	Body api.Compare `json:"body"`
+}
+
+// CompareAndPreMerged
+// swagger:response CompareAndPreMerged
+type swaggerCompareAndPreMerged struct {
+	//in: body
+	Body api.CompareAndPreMerged `json:"body"`
+}
+
+// Blame
+// swagger:response Blame
+type swaggerBlame struct {
+	//in: body
+	Body api.Blame `json:"body"`
 }

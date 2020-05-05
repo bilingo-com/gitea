@@ -108,6 +108,11 @@ func (c *Commit) Summary() string {
 	return strings.Split(strings.TrimSpace(c.CommitMessage), "\n")[0]
 }
 
+// Summary returns  commit message.
+func (c *Commit) String() string {
+	return c.CommitMessage
+}
+
 // ParentID returns oid of n-th parent (0-based index).
 // It returns nil if no such parent exists.
 func (c *Commit) ParentID(n int) (SHA1, error) {
@@ -299,6 +304,11 @@ func (c *Commit) CommitsCount() (int64, error) {
 // CommitsByRange returns the specific page commits before current revision, every page's number default by CommitsRangeSize
 func (c *Commit) CommitsByRange(page, pageSize int) (*list.List, error) {
 	return c.repo.commitsByRange(c.ID, page, pageSize)
+}
+
+// CommitsGraphRawByRange returns the specific page commits before current revision, every page's number default by CommitsRangeSize
+func (c *Commit) CommitsGraphRawByRange(page int) ([]byte, error) {
+	return c.repo.commitsGraphRawByRange(c.ID, page)
 }
 
 // CommitsBefore returns all the commits before current revision

@@ -43,7 +43,7 @@ func (repo *Repository) GetMergeBase(tmpRemote string, base, head string) (strin
 }
 
 // GetCompareInfo generates and returns compare information between base and head branches of repositories.
-func (repo *Repository) GetCompareInfo(basePath, baseBranch, headBranch string) (_ *CompareInfo, err error) {
+func (repo *Repository) GetCompareInfo(basePath, baseBranch, headBranch string, pageOpts ...int) (_ *CompareInfo, err error) {
 	var (
 		remoteBranch string
 		tmpRemote    string
@@ -67,10 +67,18 @@ func (repo *Repository) GetCompareInfo(basePath, baseBranch, headBranch string) 
 	compareInfo.MergeBase, remoteBranch, err = repo.GetMergeBase(tmpRemote, baseBranch, headBranch)
 	if err == nil {
 		// We have a common base
-		logs, err := NewCommand("log", compareInfo.MergeBase+"..."+headBranch, prettyLogFormat).RunInDirBytes(repo.Path)
+		var logs []byte
+		var err error
+		if pageOpts != nil && len(pageOpts) == 2 {
+			logs, err = NewCommand("log", compareInfo.MergeBase+"..."+headBranch, "--skip="+strconv.Itoa((pageOpts[0]-1)*pageOpts[1]),
+				"--max-count="+strconv.Itoa(pageOpts[1]), prettyLogFormat).RunInDirBytes(repo.Path)
+		} else {
+			logs, err = NewCommand("log", compareInfo.MergeBase+"..."+headBranch, prettyLogFormat).RunInDirBytes(repo.Path)
+		}
 		if err != nil {
 			return nil, err
 		}
+
 		compareInfo.Commits, err = repo.parsePrettyFormatLogToList(logs)
 		if err != nil {
 			return nil, fmt.Errorf("parsePrettyFormatLogToList: %v", err)

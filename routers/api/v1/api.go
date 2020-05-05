@@ -789,9 +789,11 @@ func RegisterRoutes(m *macaron.Macaron) {
 				m.Group("/pulls", func() {
 					m.Combo("").Get(bind(api.ListPullRequestsOptions{}), repo.ListPullRequests).
 						Post(reqToken(), mustNotBeArchived, bind(api.CreatePullRequestOption{}), repo.CreatePullRequest)
+					m.Get("/preMerged/*", repo.CompareAndPreMerged)
 					m.Group("/:index", func() {
 						m.Combo("").Get(repo.GetPullRequest).
 							Patch(reqToken(), reqRepoWriter(models.UnitTypePullRequests), bind(api.EditPullRequestOption{}), repo.EditPullRequest)
+						m.Combo("/diffAddPatchRaw").Get(repo.GetPullWithDiffAndPatchRawRequest)
 						m.Combo("/merge").Get(repo.IsPullRequestMerged).
 							Post(reqToken(), mustNotBeArchived, bind(auth.MergePullRequestForm{}), repo.MergePullRequest)
 						m.Group("/reviews", func() {
@@ -816,20 +818,32 @@ func RegisterRoutes(m *macaron.Macaron) {
 				}, reqRepoReader(models.UnitTypeCode))
 				m.Group("/commits", func() {
 					m.Get("", repo.GetAllCommits)
+					m.Get("/fullMessages", repo.GetAllCommitsWithFullMessages)
+					m.Get("/graphRaw", repo.GetAllCommitsGraphRaw)
 					m.Group("/:ref", func() {
 						m.Get("/status", repo.GetCombinedCommitStatusByRef)
 						m.Get("/statuses", repo.GetCommitStatusesByRef)
+						m.Get("/count", repo.GetCommitCountFromRef)
 					})
 				}, reqRepoReader(models.UnitTypeCode))
 				m.Group("/git", func() {
 					m.Group("/commits", func() {
 						m.Get("/:sha", repo.GetSingleCommit)
+						m.Get("/:sha/diffRaw", repo.GetSingleCommitWithDiffRaw)
 					})
 					m.Get("/refs", repo.GetGitAllRefs)
 					m.Get("/refs/*", repo.GetGitRefs)
 					m.Get("/trees/:sha", context.RepoRef(), repo.GetTree)
+					m.Get("/treesWithCommits/:sha", context.RepoRef(), repo.GetTreeWithCommits)
+					m.Get("/treesWithCommits/:sha/*", context.RepoRefBySHAWithPath(), repo.GetTreeWithCommits)
 					m.Get("/blobs/:sha", context.RepoRef(), repo.GetBlob)
 					m.Get("/tags/:sha", context.RepoRef(), repo.GetTag)
+					m.Get("/compare/*", context.ReferencesGitRepo(false), repo.GetCompare)
+					m.Group("/blame", func() {
+						m.Get("/branch/*", context.RepoRefByType(context.RepoRefBranch), repo.RefBlameByBranch)
+						m.Get("/tag/*", context.RepoRefByType(context.RepoRefTag), repo.RefBlameByTag)
+						m.Get("/commit/*", context.RepoRefByType(context.RepoRefCommit), repo.RefBlameByCommit)
+					})
 				}, reqRepoReader(models.UnitTypeCode))
 				m.Group("/contents", func() {
 					m.Get("", repo.GetContentsList)

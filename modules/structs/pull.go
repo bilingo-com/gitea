@@ -49,6 +49,49 @@ type PullRequest struct {
 	Closed *time.Time `json:"closed_at"`
 }
 
+// PullRequestWithDiffAndPatchRaw represents a pull request
+type PullRequestWithDiffAndPatchRaw struct {
+	ID        int64      `json:"id"`
+	URL       string     `json:"url"`
+	Index     int64      `json:"number"`
+	Poster    *User      `json:"user"`
+	Title     string     `json:"title"`
+	Body      string     `json:"body"`
+	Labels    []*Label   `json:"labels"`
+	Milestone *Milestone `json:"milestone"`
+	Assignee  *User      `json:"assignee"`
+	Assignees []*User    `json:"assignees"`
+	State     StateType  `json:"state"`
+	Comments  int        `json:"comments"`
+
+	HTMLURL  string `json:"html_url"`
+	DiffURL  string `json:"diff_url"`
+	DiffRaw  string `json:"diff_raw"`
+	PatchURL string `json:"patch_url"`
+	PatchRaw string `json:"patch_raw"`
+
+	Mergeable bool `json:"mergeable"`
+	HasMerged bool `json:"merged"`
+	// swagger:strfmt date-time
+	Merged         *time.Time `json:"merged_at"`
+	MergedCommitID *string    `json:"merge_commit_sha"`
+	MergedBy       *User      `json:"merged_by"`
+
+	Base      *PRBranchInfo `json:"base"`
+	Head      *PRBranchInfo `json:"head"`
+	MergeBase string        `json:"merge_base"`
+
+	// swagger:strfmt date-time
+	Deadline *time.Time `json:"due_date"`
+
+	// swagger:strfmt date-time
+	Created *time.Time `json:"created_at"`
+	// swagger:strfmt date-time
+	Updated *time.Time `json:"updated_at"`
+	// swagger:strfmt date-time
+	Closed *time.Time `json:"closed_at"`
+}
+
 // PRBranchInfo information about a branch
 type PRBranchInfo struct {
 	Name       string      `json:"label"`

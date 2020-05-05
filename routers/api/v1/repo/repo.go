@@ -22,6 +22,11 @@ import (
 	repo_service "code.gitea.io/gitea/services/repository"
 )
 
+const (
+	MAX_DIFF_LEN  = 8192
+	MAX_PATCH_LEN = 8192
+)
+
 var searchOrderByMap = map[string]map[string]models.SearchOrderBy{
 	"asc": {
 		"alpha":   models.SearchOrderByAlphabetically,
