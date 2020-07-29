@@ -76,6 +76,7 @@ type CompareAndPreMerged struct {
 	DiffNotAvailable bool                `json:"diff_not_available"`
 	HasPullRequest   bool                `json:"has_pullrequest"`
 	DiffRaw          string              `json:"diff_raw"`
+	Diff             *Diff               `json:"diff"`
 	HeadBranch       string              `json:"head_branch"`
 	HeadBranches     map[string][]string `json:"head_branches"`
 	BaseCommitID     string              `json:"base_commit_id"`

@@ -18,9 +18,11 @@ import (
 	"code.gitea.io/gitea/modules/git"
 	"code.gitea.io/gitea/modules/log"
 	"code.gitea.io/gitea/modules/notification"
+	"code.gitea.io/gitea/modules/setting"
 	api "code.gitea.io/gitea/modules/structs"
 	"code.gitea.io/gitea/modules/timeutil"
 	"code.gitea.io/gitea/routers/api/v1/utils"
+	"code.gitea.io/gitea/services/gitdiff"
 	issue_service "code.gitea.io/gitea/services/issue"
 	pull_service "code.gitea.io/gitea/services/pull"
 )
@@ -885,7 +887,7 @@ func CompareAndPreMerged(ctx *context.APIContext) {
 		return
 	}
 	defer headGitRepo.Close()
-	headCommitID, baseCommitID, diffRaw, nothingToCompare, diffNotAvailable, err := prepareCompareDiff(ctx, headUser, headRepo, headGitRepo, baseIs, headIs, compareInfo, baseBranch, headBranch)
+	headCommitID, baseCommitID, diffRaw, diff, nothingToCompare, diffNotAvailable, err := prepareCompareDiff(ctx, headUser, headRepo, headGitRepo, baseIs, headIs, compareInfo, baseBranch, headBranch)
 	if err != nil {
 		ctx.ServerError("prepareCompareDiff", err)
 		return
@@ -922,6 +924,7 @@ func CompareAndPreMerged(ctx *context.APIContext) {
 	}
 
 	compareAndPreMerged.DiffRaw = diffRaw
+	compareAndPreMerged.Diff = diff
 	compareAndPreMerged.HeadBranch = headBranch
 	compareAndPreMerged.HeadBranches = headBranches
 	compareAndPreMerged.Commits = make([]*api.Commit, 0, compareInfo.Commits.Len())
@@ -1432,7 +1435,7 @@ func prepareCompareDiff(
 	headGitRepo *git.Repository,
 	baseIs, headIs map[string]bool,
 	compareInfo *git.CompareInfo,
-	baseBranch, headBranch string) (string, string, string, bool, bool, error) {
+	baseBranch, headBranch string) (string, string, string, *api.Diff, bool, bool, error) {
 
 	var err error
 
@@ -1444,12 +1447,12 @@ func prepareCompareDiff(
 			headCommitID, err = headGitRepo.GetBranchCommitID(headBranch)
 		}
 		if err != nil {
-			return "", "", "", false, false, fmt.Errorf("GetRefCommitID: %v", err)
+			return "", "", "", nil, false, false, fmt.Errorf("GetRefCommitID: %v", err)
 		}
 	}
 
 	if headCommitID == compareInfo.MergeBase {
-		return "", "", "", true, false, nil
+		return "", "", "", nil, true, false, nil
 	}
 
 	baseGitRepo := ctx.Repo.GitRepo
@@ -1461,7 +1464,7 @@ func prepareCompareDiff(
 			baseCommitID, err = baseGitRepo.GetBranchCommitID(baseBranch)
 		}
 		if err != nil {
-			return "", "", "", false, false, fmt.Errorf("GetRefCommitID: %v", err)
+			return "", "", "", nil, false, false, fmt.Errorf("GetRefCommitID: %v", err)
 		}
 	}
 
@@ -1469,7 +1472,7 @@ func prepareCompareDiff(
 	rawBuffer := &bytes.Buffer{}
 	var diffRaw string
 	if err := git.GetRawDiffForFile(models.RepoPath(headUser.Name, headRepo.Name), baseCommitID, headCommitID, "diff", "", rawBuffer); err != nil {
-		return "", "", "", false, false, fmt.Errorf("GetRawDiff: %v", err)
+		return "", "", "", nil, false, false, fmt.Errorf("GetRawDiff: %v", err)
 	}
 
 	if len(rawBuffer.Bytes()) > MAX_DIFF_LEN {
@@ -1480,5 +1483,19 @@ func prepareCompareDiff(
 
 	diffNotAvailable := len(diffRaw) == 0
 
-	return headCommitID, baseCommitID, diffRaw, false, diffNotAvailable, nil
+	diff, err := gitdiff.GetDiffRange(
+		models.RepoPath(headUser.Name, headRepo.Name),
+		baseCommitID, headCommitID,
+		setting.Git.MaxGitDiffLines,
+		setting.Git.MaxGitDiffLineCharacters,
+		setting.Git.MaxGitDiffFiles)
+	if err != nil {
+		return "", "", "", nil, false, false, fmt.Errorf("GetRawDiff: %v", err)
+	}
+	apiDiff := new(api.Diff)
+	if err := toDiff(ctx, apiDiff, diff); err != nil {
+		return "", "", "", nil, false, false, fmt.Errorf("GetRawDiff: %v", err)
+	}
+
+	return headCommitID, baseCommitID, diffRaw, apiDiff, false, diffNotAvailable, nil
 }

@@ -20,6 +20,7 @@ import (
 	api "code.gitea.io/gitea/modules/structs"
 	"code.gitea.io/gitea/modules/validation"
 	"code.gitea.io/gitea/routers/api/v1/utils"
+	"code.gitea.io/gitea/services/gitdiff"
 )
 
 // GetSingleCommit get a commit via sha
@@ -154,6 +155,19 @@ func getCommitWithDiffRaw(ctx *context.APIContext, identifier string) {
 		json.DiffRaw = string(buffer.Bytes()[:MAX_DIFF_LEN])
 	} else {
 		json.DiffRaw = buffer.String()
+	}
+
+	diff, err := gitdiff.GetDiffCommit(ctx.Repo.Repository.RepoPath(),
+		identifier, setting.Git.MaxGitDiffLines,
+		setting.Git.MaxGitDiffLineCharacters, setting.Git.MaxGitDiffFiles)
+	if err != nil {
+		ctx.Error(http.StatusInternalServerError, "GetDiffRange", err)
+		return
+	}
+	json.Diff = new(api.Diff)
+	if err := toDiff(ctx, json.Diff, diff); err != nil {
+		ctx.Error(http.StatusInternalServerError, "GetDiffRange", err)
+		return
 	}
 
 	ctx.JSON(http.StatusOK, json)
