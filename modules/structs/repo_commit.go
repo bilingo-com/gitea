@@ -56,7 +56,6 @@ type CommitWithDiffRaw struct {
 	Committer  *User         `json:"committer"`
 	Parents    []*CommitMeta `json:"parents"`
 	DiffRaw    string        `json:"diff_raw"`
-	Diff       *Diff         `json:"diff"`
 }
 
 // CommitsCount contains a count from the given ref.

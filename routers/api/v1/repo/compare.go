@@ -117,8 +117,7 @@ func toCompare(ctx *context.APIContext, compare *api.Compare, compareInfo *git.C
 	}
 
 	// Generate the Diff in the compare.
-	compare.Diff = new(api.Diff)
-	return toDiff(ctx, compare.Diff, diff)
+	return toDiff(ctx, compare, diff)
 }
 
 func parseCompareDiffInfo(ctx *context.APIContext) (*models.User, *models.Repository, *git.Repository, *git.CompareInfo, string, string, map[string]bool, map[string]bool, bool) {
@@ -357,17 +356,18 @@ func toCommits(ctx *context.APIContext, compare *api.Compare, compareInfo *git.C
 	return nil
 }
 
-func toDiff(ctx *context.APIContext, apiDiff *api.Diff, diff *gitdiff.Diff) error {
-	apiDiff.TotalAddition = diff.TotalAddition
-	apiDiff.TotalDeletion = diff.TotalDeletion
+func toDiff(ctx *context.APIContext, compare *api.Compare, diff *gitdiff.Diff) error {
+	compare.Diff = new(api.Diff)
+	compare.Diff.TotalAddition = diff.TotalAddition
+	compare.Diff.TotalDeletion = diff.TotalDeletion
 	for i := range diff.Files {
 		compareDiffFile, err := toCompareDiff(ctx, diff.Files[i])
 		if err != nil {
 			return err
 		}
-		apiDiff.Files = append(apiDiff.Files, compareDiffFile)
+		compare.Diff.Files = append(compare.Diff.Files, compareDiffFile)
 	}
-	apiDiff.IsIncomplete = diff.IsIncomplete
+	compare.Diff.IsIncomplete = diff.IsIncomplete
 	return nil
 }
 
