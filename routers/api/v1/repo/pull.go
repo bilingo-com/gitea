@@ -246,6 +246,31 @@ func GetPullWithDiffAndPatchRawRequest(ctx *context.APIContext) {
 		prResp.PatchRaw = buffer.String()
 	}
 
+	// Load commits
+	compareInfo, err := ctx.Repo.GitRepo.GetCompareInfo(ctx.Repo.Repository.RepoPath(),
+		pr.MergeBase, pr.HeadBranch)
+
+	userCache := make(map[string]*models.User)
+
+	apiCommits := make([]*api.Commit, compareInfo.Commits.Len())
+
+	i := 0
+	for commitPointer := compareInfo.Commits.Front(); commitPointer != nil; commitPointer = commitPointer.Next() {
+		commit := commitPointer.Value.(*git.Commit)
+
+		// Create json struct
+		apiCommits[i], err = toCommitWithFullMessages(ctx, ctx.Repo.Repository, commit, userCache)
+		if err != nil {
+			ctx.ServerError("toCommit", err)
+			return
+		}
+
+		i++
+	}
+	prResp.Commits = apiCommits
+	prResp.CommitsCount = int64(compareInfo.Commits.Len())
+	prResp.CommitsNumFiles = int64(compareInfo.NumFiles)
+
 	ctx.JSON(http.StatusOK, prResp)
 }
 

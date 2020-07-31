@@ -14565,6 +14565,23 @@
           "format": "int64",
           "x-go-name": "Comments"
         },
+        "commits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Commit"
+          },
+          "x-go-name": "Commits"
+        },
+        "commits_count": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "CommitsCount"
+        },
+        "commits_num_files": {
+          "type": "integer",
+          "format": "int64",
+          "x-go-name": "CommitsNumFiles"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time",

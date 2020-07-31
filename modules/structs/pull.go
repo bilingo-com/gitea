@@ -64,11 +64,14 @@ type PullRequestWithDiffAndPatchRaw struct {
 	State     StateType  `json:"state"`
 	Comments  int        `json:"comments"`
 
-	HTMLURL  string `json:"html_url"`
-	DiffURL  string `json:"diff_url"`
-	DiffRaw  string `json:"diff_raw"`
-	PatchURL string `json:"patch_url"`
-	PatchRaw string `json:"patch_raw"`
+	HTMLURL         string    `json:"html_url"`
+	DiffURL         string    `json:"diff_url"`
+	DiffRaw         string    `json:"diff_raw"`
+	PatchURL        string    `json:"patch_url"`
+	PatchRaw        string    `json:"patch_raw"`
+	Commits         []*Commit `json:"commits"`
+	CommitsCount    int64     `json:"commits_count"`
+	CommitsNumFiles int64     `json:"commits_num_files"`
 
 	Mergeable bool `json:"mergeable"`
 	HasMerged bool `json:"merged"`
