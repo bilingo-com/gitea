@@ -9,6 +9,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"os"
 	"regexp"
 	"strings"
@@ -300,6 +301,44 @@ func (t *TemporaryUploadRepository) DiffIndex() (*gitdiff.Diff, error) {
 	}
 
 	return diff, nil
+}
+
+// DiffIndex returns a Diff of the current index to the head
+func (t *TemporaryUploadRepository) DiffRaw() ([]byte, error) {
+	stdoutReader, stdoutWriter, err := os.Pipe()
+	if err != nil {
+		log.Error("Unable to open stdout pipe: %v", err)
+		return nil, fmt.Errorf("Unable to open stdout pipe: %v", err)
+	}
+	defer func() {
+		_ = stdoutReader.Close()
+		_ = stdoutWriter.Close()
+	}()
+	stderr := new(bytes.Buffer)
+
+	var diffRaw []byte
+	var readErr error
+	if err := git.NewCommand("diff-index", "--cached", "-p", "HEAD").
+		RunInDirTimeoutEnvFullPipelineFunc(nil, 30*time.Second, t.basePath, stdoutWriter, stderr, nil, func(tx context.Context, cancel context.CancelFunc) error {
+			_ = stdoutWriter.Close()
+			diffRaw, readErr = ioutil.ReadAll(stdoutReader)
+			if err != nil {
+				return readErr
+			}
+			_ = stdoutReader.Close()
+			return nil
+		}); err != nil {
+		if readErr != nil {
+			log.Error("Unable to ParsePatch in temporary repo %s (%s). Error: %v", t.repo.FullName(), t.basePath, readErr)
+			return nil, readErr
+		}
+		log.Error("Unable to run diff pipeline in temporary repo %s (%s). Error: %v\nStderr: %s",
+			t.repo.FullName(), t.basePath, err, stderr)
+		return nil, fmt.Errorf("Unable to run diff-index pipeline in temporary repo %s. Error: %v\nStderr: %s",
+			t.repo.FullName(), err, stderr)
+	}
+
+	return diffRaw, nil
 }
 
 // CheckAttribute checks the given attribute of the provided files

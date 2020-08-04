@@ -2800,6 +2800,66 @@
         }
       }
     },
+    "/repos/{owner}/{repo}/contents/previewDiff/{filepath}": {
+      "post": {
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "tags": [
+          "repository"
+        ],
+        "summary": "Preview files created or modified in the repository.",
+        "operationId": "repoPreviewDiff",
+        "parameters": [
+          {
+            "type": "string",
+            "description": "owner of the repo",
+            "name": "owner",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "name of the repo",
+            "name": "repo",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "description": "path of the file to create or modify",
+            "name": "filepath",
+            "in": "path",
+            "required": true
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PreviewDiffOptions"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "$ref": "#/responses/PreviewDiffResponse"
+          },
+          "403": {
+            "$ref": "#/responses/error"
+          },
+          "404": {
+            "$ref": "#/responses/notFound"
+          },
+          "422": {
+            "$ref": "#/responses/error"
+          }
+        }
+      }
+    },
     "/repos/{owner}/{repo}/contents/{filepath}": {
       "get": {
         "produces": [
@@ -14352,6 +14412,28 @@
       },
       "x-go-package": "code.gitea.io/gitea/modules/structs"
     },
+    "PreviewDiffOptions": {
+      "description": "EditPreviewDiffOptions Options for changing preview diff",
+      "type": "object",
+      "properties": {
+        "content": {
+          "type": "string",
+          "x-go-name": "Content"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
+    "PreviewDiffResponse": {
+      "description": "PreviewDiffResponse contains information about create or modify a file preview",
+      "type": "object",
+      "properties": {
+        "diff_raw": {
+          "type": "string",
+          "x-go-name": "DiffRaw"
+        }
+      },
+      "x-go-package": "code.gitea.io/gitea/modules/structs"
+    },
     "PublicKey": {
       "description": "PublicKey publickey is a user key to push code to repository",
       "type": "object",
@@ -16015,6 +16097,12 @@
         "items": {
           "$ref": "#/definitions/Organization"
         }
+      }
+    },
+    "PreviewDiffResponse": {
+      "description": "PreviewDiffResponse",
+      "schema": {
+        "$ref": "#/definitions/PreviewDiffResponse"
       }
     },
     "PublicKey": {

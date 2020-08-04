@@ -9,6 +9,8 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/http"
+	"path"
+	"strings"
 	"time"
 
 	"code.gitea.io/gitea/models"
@@ -164,6 +166,82 @@ func canWriteFiles(r *context.Repository) bool {
 // canReadFiles returns true if repository is readable and user has proper access level.
 func canReadFiles(r *context.Repository) bool {
 	return r.Permission.CanRead(models.UnitTypeCode)
+}
+
+// PreviewDiff Preview content diff
+func PreviewDiff(ctx *context.APIContext, apiOpts api.PreviewDiffOptions) {
+	// swagger:operation POST /repos/{owner}/{repo}/contents/previewDiff/{filepath} repository repoPreviewDiff
+	// ---
+	// summary: Preview files created or modified in the repository.
+	// consumes:
+	// - application/json
+	// produces:
+	// - application/json
+	// parameters:
+	// - name: owner
+	//   in: path
+	//   description: owner of the repo
+	//   type: string
+	//   required: true
+	// - name: repo
+	//   in: path
+	//   description: name of the repo
+	//   type: string
+	//   required: true
+	// - name: filepath
+	//   in: path
+	//   description: path of the file to create or modify
+	//   type: string
+	//   required: true
+	// - name: body
+	//   in: body
+	//   required: true
+	//   schema:
+	//     "$ref": "#/definitions/PreviewDiffOptions"
+	// responses:
+	//   "201":
+	//     "$ref": "#/responses/PreviewDiffResponse"
+	//   "403":
+	//     "$ref": "#/responses/error"
+	//   "404":
+	//     "$ref": "#/responses/notFound"
+	//   "422":
+	//     "$ref": "#/responses/error"
+
+	if ctx.Repo.Repository.IsEmpty {
+		ctx.Error(http.StatusUnprocessableEntity, "RepoIsEmpty", fmt.Errorf("repo is empty"))
+		return
+	}
+
+	treePath := cleanUploadFileName(ctx.Repo.TreePath)
+	if len(treePath) == 0 {
+		ctx.Error(http.StatusInternalServerError, "file name to diff is invalid", nil)
+		return
+	}
+
+	entry, err := ctx.Repo.Commit.GetTreeEntryByPath(treePath)
+	if err != nil {
+		ctx.Error(http.StatusInternalServerError, "GetTreeEntryByPath", err)
+		return
+	} else if entry.IsDir() {
+		ctx.Error(http.StatusUnprocessableEntity, "", nil)
+		return
+	}
+
+	diff, err := repofiles.GetDiffRawPreview(ctx.Repo.Repository, ctx.Repo.BranchName, treePath, apiOpts.Content)
+	if err != nil {
+		ctx.Error(http.StatusInternalServerError, "GetDiffPreview", err)
+		return
+	}
+
+	resp := new(api.PreviewDiffResponse)
+	if len(diff) > MAX_DIFF_LEN {
+		resp.DiffRaw = string(diff[:MAX_DIFF_LEN])
+	} else {
+		resp.DiffRaw = string(diff)
+	}
+
+	ctx.JSON(http.StatusCreated, resp)
 }
 
 // CreateFile handles API call for creating a file
@@ -566,4 +644,16 @@ func GetContentsList(ctx *context.APIContext) {
 
 	// same as GetContents(), this function is here because swagger fails if path is empty in GetContents() interface
 	GetContents(ctx)
+}
+
+func cleanUploadFileName(name string) string {
+	// Rebase the filename
+	name = strings.Trim(path.Clean("/"+name), " /")
+	// Git disallows any filenames to have a .git directory in them.
+	for _, part := range strings.Split(name, "/") {
+		if strings.ToLower(part) == ".git" {
+			return ""
+		}
+	}
+	return name
 }

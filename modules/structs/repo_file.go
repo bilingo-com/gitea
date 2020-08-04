@@ -48,6 +48,11 @@ type UpdateFileOptions struct {
 	FromPath string `json:"from_path" binding:"MaxSize(500)"`
 }
 
+// EditPreviewDiffOptions Options for changing preview diff
+type PreviewDiffOptions struct {
+	Content string `json:"content"`
+}
+
 // FileLinksResponse contains the links for a repo's file
 type FileLinksResponse struct {
 	Self    *string `json:"self"`
@@ -94,6 +99,11 @@ type FileResponse struct {
 	Content      *ContentsResponse          `json:"content"`
 	Commit       *FileCommitResponse        `json:"commit"`
 	Verification *PayloadCommitVerification `json:"verification"`
+}
+
+// PreviewDiffResponse contains information about create or modify a file preview
+type PreviewDiffResponse struct {
+	DiffRaw string `json:"diff_raw"`
 }
 
 // FileDeleteResponse contains information about a repo's file that was deleted

@@ -293,6 +293,13 @@ type swaggerEmptyRepository struct {
 	Body api.APIError `json:"body"`
 }
 
+// PreviewDiffResponse
+// swagger:response PreviewDiffResponse
+type swaggerPreviewDiffResponse struct {
+	// in: body
+	Body api.PreviewDiffResponse `json:"body"`
+}
+
 // FileResponse
 // swagger:response FileResponse
 type swaggerFileResponse struct {

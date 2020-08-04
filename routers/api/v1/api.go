@@ -847,6 +847,7 @@ func RegisterRoutes(m *macaron.Macaron) {
 				}, reqRepoReader(models.UnitTypeCode))
 				m.Group("/contents", func() {
 					m.Get("", repo.GetContentsList)
+					m.Post("/previewDiff/*", context.RepoRefByType(context.RepoRefBranch), bind(api.PreviewDiffOptions{}), repo.PreviewDiff)
 					m.Get("/*", repo.GetContents)
 					m.Group("/*", func() {
 						m.Post("", bind(api.CreateFileOptions{}), repo.CreateFile)
